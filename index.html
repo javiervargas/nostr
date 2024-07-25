@@ -1,0 +1,68 @@
+
+<html>
+<script src="https://unpkg.com/nostr-tools/lib/nostr.bundle.js"></script>
+<script>
+  let priv = window.NostrTools.generatePrivateKey(); 
+  console.log(priv);
+  let pub = window.NostrTools.getPublicKey(priv);
+  console.log(pub);
+</script>
+<head>
+    <title>Nostr Tools Example</title>
+</head>
+<body>
+    <h1>Nostr Tools Example</h1>
+
+    <!-- Button to generate keys -->
+    <button id="generateKeys">Generate Key Pair</button>
+    <p>Private Key: <span id="privateKey"></span></p>
+    <p>Public Key: <span id="publicKey"></span></p>
+
+    <!-- Button to verify event -->
+    <button id="verifyEvent">Verify Event</button>
+    <p id="verificationResult"></p>
+</body>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const generateKeysButton = document.getElementById('generateKeys');
+    const privateKeyElement = document.getElementById('privateKey');
+    const publicKeyElement = document.getElementById('publicKey');
+
+    const verifyEventButton = document.getElementById('verifyEvent');
+    const verificationResultElement = document.getElementById('verificationResult');
+
+    // Click event for generating keys
+    generateKeysButton.addEventListener('click', () => {
+        const keyPair = window.NostrTools.generatePrivateKey();
+        privateKeyElement.innerText = keyPair;
+	let pub = window.NostrTools.getPublicKey(priv);
+        publicKeyElement.innerText = pub;
+    });
+
+    // Click event for verifying an event
+    verifyEventButton.addEventListener('click', () => {
+ //     const privateKey = privateKeyElement.innerText;
+        const publicKey = publicKeyElement.innerText;
+	const privateKey = window.prompt('Please enter your private key:');
+        // Replace this with your event data and signature
+
+	let event = {
+  		kind: 1,
+		created_at: Math.floor(Date.now() / 1000),
+		tags: [],
+		content: 'hello',
+		pubkey: window.NostrTools.getPublicKey(privateKey),
+	}
+
+	event.id = window.NostrTools.getEventHash(event)
+	event.sig = window.NostrTools.getSignature(event, privateKey)
+
+	let ok = window.NostrTools.validateEvent(event)
+	let veryOk = window.NostrTools.verifySignature(event)
+
+        // Verify the event using the provided key pair
+        verificationResultElement.innerText = veryOk ? 'Event Verified' : 'Event Not Verified';
+    });
+});
+</script>
+</html>
